@@ -7,7 +7,6 @@ import os
 from datetime import datetime, timedelta
 
 from flask import Flask, Response
-from werkzeug.contrib.cache import SimpleCache
 
 class CampusICSFetcher:
     """Fetches the ICS file from Campus."""
@@ -45,15 +44,11 @@ class CampusICSFetcher:
         return ics_file_response.text
 
 app = Flask(__name__)
-cache = SimpleCache()
+fetcher = CampusICSFetcher()
 
 @app.route("/")
 def index():
     """Serves the ICS file."""
-    fetcher = cache.get("fetcher")
-    if fetcher is None:
-        fetcher = CampusICSFetcher()
-        cache.set("fetcher", fetcher)
     response = Response(fetcher.fetch())
     response.headers["Content-Type"] = "text/calendar; charset=utf-8"
     response.headers["Content-Disposition"] = "attachment; filename=calendar.ics"
