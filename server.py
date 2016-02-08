@@ -6,7 +6,7 @@ import requests
 import os
 from datetime import datetime, timedelta
 
-from flask import Flask, Response
+from flask import Flask, Response, abort
 
 class CampusICSFetcher:
     """Fetches the ICS file from Campus."""
@@ -35,12 +35,12 @@ class CampusICSFetcher:
 
         session = requests.Session()
         data = {"login": "Login", "u": self.campus_user, "p": self.campus_password}
-        session.post("https://www.campusoffice.fh-aachen.de/views/campus/search.asp", data=data)
+        session.post("https://www.campusoffice.fh-aachen.de/views/campus/search.asp", data=data, timeout = 5)
         start_date  =   (datetime.now() + timedelta(days=-180)).strftime("%d.%m.%Y")
         end_date    =   (datetime.now() + timedelta(days=+180)).strftime("%d.%m.%Y")
         ics_file_response = session.get("https://www.campusoffice.fh-aachen.de/views/"
                 "calendar/iCalExport.asp?startdt={}&enddt={}%2023:59:59"
-                .format(start_date, end_date))
+                .format(start_date, end_date), timeout = 5)
         return ics_file_response.text
 
 app = Flask(__name__)
@@ -49,10 +49,14 @@ fetcher = CampusICSFetcher()
 @app.route("/")
 def index():
     """Serves the ICS file."""
-    response = Response(fetcher.fetch())
-    response.headers["Content-Type"] = "text/calendar; charset=utf-8"
-    response.headers["Content-Disposition"] = "attachment; filename=calendar.ics"
-    return response
+    try:
+        response = Response(fetcher.fetch())
+        response.headers["Content-Type"] = "text/calendar; charset=utf-8"
+        response.headers["Content-Disposition"] = "attachment; filename=calendar.ics"
+        return response
+    except:
+        abort(503)
 
 if __name__ == "__main__":
+    app.debug = True
     app.run()
