@@ -41,7 +41,10 @@ class CampusICSFetcher:
         ics_file_response = session.get("https://www.campusoffice.fh-aachen.de/views/"
                 "calendar/iCalExport.asp?startdt={}&enddt={}%2023:59:59"
                 .format(start_date, end_date), timeout = 5)
-        return ics_file_response.text
+        if ics_file_response.headers["Content-Disposition"]:
+            return ics_file_response.text
+        else:
+            raise Exception
 
 app = Flask(__name__)
 fetcher = CampusICSFetcher()
