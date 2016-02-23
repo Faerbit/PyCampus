@@ -35,12 +35,12 @@ class CampusICSFetcher:
 
         session = requests.Session()
         data = {"login": "Login", "u": self.campus_user, "p": self.campus_password}
-        session.post("https://www.campusoffice.fh-aachen.de/views/campus/search.asp", data=data, timeout = 5)
+        session.post("https://www.campusoffice.fh-aachen.de/views/campus/search.asp", data=data, timeout = 20)
         start_date  =   (datetime.now() + timedelta(days=-180)).strftime("%d.%m.%Y")
         end_date    =   (datetime.now() + timedelta(days=+180)).strftime("%d.%m.%Y")
         ics_file_response = session.get("https://www.campusoffice.fh-aachen.de/views/"
                 "calendar/iCalExport.asp?startdt={}&enddt={}%2023:59:59"
-                .format(start_date, end_date), timeout = 5)
+                .format(start_date, end_date), timeout = 20)
         if ics_file_response.headers["Content-Disposition"]:
             return ics_file_response.text
         else:
