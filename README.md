@@ -1,4 +1,4 @@
-#PyCampus
+#Campus ICS Feed
 
 This is a simple web server which serves the ICS Calendar from the FH Aachen
 Campus.
