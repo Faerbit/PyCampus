@@ -47,13 +47,12 @@ class CampusICSFetcher:
             raise Exception
 
 app = Flask(__name__)
-fetcher = CampusICSFetcher()
 
 @app.route("/")
 def index():
     """Serves the ICS file."""
     try:
-        response = Response(fetcher.fetch())
+        response = Response(app.fetcher.fetch())
         response.headers["Content-Type"] = "text/calendar; charset=utf-8"
         response.headers["Content-Disposition"] = "attachment; filename=calendar.ics"
         return response
@@ -62,4 +61,5 @@ def index():
 
 if __name__ == "__main__":
     #app.debug = True
+    app.fetcher = CampusICSFetcher()
     app.run()
