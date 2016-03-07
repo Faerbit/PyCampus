@@ -8,6 +8,10 @@ from datetime import datetime, timedelta
 
 from flask import Flask, Response, abort
 
+class ServiceUnavailableException(Exception):
+    """Used for the campus service not functioning correct."""
+    pass
+
 class CampusICSFetcher:
     """Fetches the ICS file from Campus."""
 
@@ -44,12 +48,14 @@ class CampusICSFetcher:
         ics_file_response = session.get("https://www.campusoffice.fh-aachen.de/views/"
                 "calendar/iCalExport.asp?startdt={}&enddt={}%2023:59:59"
                 .format(start_date, end_date), timeout = 20)
-        if ics_file_response.headers["Content-Disposition"]:
+        if (ics_file_response.status_code == 200
+                and "Content-Disposition" in ics_file_response.headers):
             return ics_file_response.text
         else:
-            raise Exception
+            raise ServiceUnavailableException
 
 app = Flask(__name__)
+app.config["PROPAGATE_EXCEPTIONS"] = True
 fetcher = CampusICSFetcher()
 
 @app.route("/")
@@ -60,7 +66,7 @@ def index():
         response.headers["Content-Type"] = "text/calendar; charset=utf-8"
         response.headers["Content-Disposition"] = "attachment; filename=calendar.ics"
         return response
-    except:
+    except ServiceUnavailableException:
         abort(503)
 
 if __name__ == "__main__":
