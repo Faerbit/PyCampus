@@ -21,6 +21,9 @@ class CampusICSFetcher:
         dir_name = os.path.dirname(abspath)
         os.chdir(dir_name)
 
+        if os.environ.get("CAMPUS_CONFIG_FILE"):
+            config_path = os.environ.get("CAMPUS_CONFIG_FILE")
+
         if os.path.isfile(config_path):
             config = configparser.ConfigParser()
             config.read(config_path)
