@@ -25,16 +25,21 @@ class CampusICSFetcher:
         dir_name = os.path.dirname(abspath)
         os.chdir(dir_name)
 
-        if os.environ.get("CAMPUS_CONFIG_FILE"):
-            config_path = os.environ.get("CAMPUS_CONFIG_FILE")
+        config_file_locations = [ config_path, "/etc/campus_ics_feed.ini" ]
 
-        if os.path.isfile(config_path):
-            config = configparser.ConfigParser()
-            config.read(config_path)
-            self.campus_user           = config["Campus"]["Username"]
-            self.campus_password       = config["Campus"]["Password"]
+        if os.environ.get("CAMPUS_CONFIG_FILE"):
+            config_file_locations.append(os.environ.get("CAMPUS_CONFIG_FILE"))
+
+        for cfg_file in config_file_locations:
+            if os.path.isfile(cfg_file):
+                config = configparser.ConfigParser()
+                config.read(cfg_file)
+                self.campus_user           = config["Campus"]["Username"]
+                self.campus_password       = config["Campus"]["Password"]
+                break
         else:
-            print("Please provide a configuration file named '" + config_path + "'.")
+            print("Please provide a configuration file named "
+                    + " or ".join(map(lambda x: "'" + str(x) + "'", config_file_locations)) + ".")
             exit()
 
     def fetch(self):
