@@ -25,7 +25,7 @@ class CampusICSFetcher:
         dir_name = os.path.dirname(abspath)
         os.chdir(dir_name)
 
-        config_file_locations = [ dir_name + "/" + config_path,
+        config_file_locations = [ os.path.join(dir_name, config_path),
                 "/etc/campus-ics-feed.ini" ]
 
         if os.environ.get("CAMPUS_CONFIG_FILE"):
