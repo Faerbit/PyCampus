@@ -7,12 +7,10 @@ Campus.
 This scripts depends on **Python 3**, the **requests** and the
 **Flask** package from python.
 
-##Configuration
-Copy the example.ini to default.ini and fill in the necessary details.
-
 ##Usage
 The script provides a WSGI interface called 'app'. For deploying such a
-interface please see other ressources.
+interface please see other ressources. Your credentials are supplied via basic
+HTTP auth.
 
 ##License
 This code is licensed under the MIT License. See LICENSE.md for more details.
