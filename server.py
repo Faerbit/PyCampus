@@ -16,7 +16,6 @@ def authenticate():
 
 app = Flask(__name__)
 app.config["PROPAGATE_EXCEPTIONS"] = True
-fetcher = CampusICSFetcher()
 
 @app.route("/")
 def index():
