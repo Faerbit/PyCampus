@@ -16,6 +16,7 @@ def authenticate():
 
 app = Flask(__name__)
 app.config["PROPAGATE_EXCEPTIONS"] = True
+BASE_URL = "https://www.campusoffice.fh-aachen.de/"
 
 @app.route("/")
 def index():
@@ -31,17 +32,16 @@ def index():
     else:
         return authenticate()
     session = requests.Session()
-    data = {"login": "Login", "u": campus_user, 
-            "p": campus_password}
-    login_response = session.post("https://www.campusoffice.fh-aachen.de/"
-            "views/campus/search.asp", data=data, timeout = 20)
+    data = { "u": campus_user, "p": campus_password }
+    login_response = session.post(BASE_URL + "views/campus/search.asp",
+            data=data, timeout = 20)
     if "fehlgeschlagen" in login_response.text:
         abort(403)
     start_date  =   (datetime.now() + 
             timedelta(days=-180)).strftime("%d.%m.%Y")
     end_date    =   (datetime.now() 
             + timedelta(days=+180)).strftime("%d.%m.%Y")
-    ics_file_response = session.get("https://www.campusoffice.fh-aachen.de/"
+    ics_file_response = session.get(BASE_URL +
             "views/calendar/iCalExport.asp?startdt={}&enddt={}%2023:59:59"
             .format(start_date, end_date), timeout = 20)
     if (ics_file_response.status_code == 200
