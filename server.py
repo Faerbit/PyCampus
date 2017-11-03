@@ -57,6 +57,7 @@ def ics(base_url):
             .format(start_date, end_date), timeout = 20)
     if (ics_file_response.status_code == 200
             and "Content-Disposition" in ics_file_response.headers):
+        ics_file_response.encoding = "utf-8"
         response = Response(ics_file_response.text)
         response.headers["Content-Type"] = "text/calendar; charset=utf-8"
         response.headers["Content-Disposition"] = ("attachment;"
